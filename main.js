@@ -1,6 +1,7 @@
 const http = require('http');
 const xmlHttpRequest = require('xhr2');
-const data = require('./data.js');
+const api_data = require('./data.js');
+
 
 const hostname = '127.0.0.1';
 const port = 3000;
@@ -16,16 +17,19 @@ const server = http.createServer((req, res) => {
 
 server.listen(port, hostname, () => {
     console.log(`Server running at http://${hostname}:${port}/`);
-    setTimeout(function(){
-        var xmlHttp = new xmlHttpRequest();
-        xmlHttp.addEventListener("load", function () {
-            // console.log(xmlHttp.responseTsext);
-            handleData(xmlHttp.responseText);
-        }, false);
-        xmlHttp.open("GET", "https://eservices.es2.immd.gov.hk/surgecontrolgate/ticket/getSituation");
-        xmlHttp.send();
-    }, 60000);
+    callApi();
+    setTimeout(callApi, 60000);
 });
+
+function callApi() {
+    var xmlHttp = new xmlHttpRequest();
+    xmlHttp.addEventListener("load", function () {
+        // console.log(xmlHttp.responseTsext);
+        handleData(xmlHttp.responseText);
+    }, false);
+    xmlHttp.open("GET", "https://eservices.es2.immd.gov.hk/surgecontrolgate/ticket/getSituation");
+    xmlHttp.send();
+}
 
 function handleData(response) {
     var obj = JSON.parse(response);
@@ -51,6 +55,7 @@ function checkDate(obj) {
         var parts = element.date.split('/');
         var date = new Date(parts[2], parts[0] - 1, parts[1]);
         if (!withinRange(date.getTime())) {
+
             return;
         }
         var district = element.officeId;
@@ -85,7 +90,7 @@ function notify(date, district, quota, quota_amount) {
     if (notified.indexOf(id) >= 0) {
         return;
     }
-    else{
+    else {
         notified.push(id);
     }
 
@@ -97,16 +102,16 @@ function notify(date, district, quota, quota_amount) {
     console.log(text);
 
     var data = {
-        service_id: data.service_id,
-        template_id: data.template_id,
-        user_id: data.user_id,
+        service_id: api_data.service_id,
+        template_id: api_data.template_id,
+        user_id: api_data.user_id,
         template_params: {
             'date': date.toLocaleDateString("zh-HK"),
             'district': officeMap.get(district),
             'quota_type': quota == "R" ? "一般服務時段 " : "延長服務時段 ",
             'quota_amount': quota_amount == "g" ? "尚有名額" : "少量名額"
         },
-        accessToken: data.accessToken
+        accessToken: api_data.accessToken
     };
 
     var xmlHttp = new xmlHttpRequest();   // new HttpRequest instance 
