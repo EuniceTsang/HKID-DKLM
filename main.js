@@ -18,7 +18,6 @@ const server = http.createServer((req, res) => {
 server.listen(port, hostname, () => {
     console.log(`Server running at http://${hostname}:${port}/`);
     callApi();
-    setTimeout(callApi, 60000);
 });
 
 function callApi() {
@@ -28,7 +27,8 @@ function callApi() {
         handleData(xmlHttp.responseText);
     }, false);
     xmlHttp.open("GET", "https://eservices.es2.immd.gov.hk/surgecontrolgate/ticket/getSituation");
-    xmlHttp.send();
+    xmlHttp.send();    
+    setTimeout(callApi, 60000);
 }
 
 function handleData(response) {
