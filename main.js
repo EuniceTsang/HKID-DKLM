@@ -24,7 +24,7 @@ server.listen(port, hostname, () => {
 function callApi() {
     var xmlHttp = new xmlHttpRequest();
     xmlHttp.addEventListener("load", function () {
-        // console.log(xmlHttp.responseTsext);
+        console.log(new Date().toISOString(), xmlHttp.status, xmlHttp.statusText);
         handleData(xmlHttp.responseText);
     }, false);
     xmlHttp.open("GET", "https://eservices.es2.immd.gov.hk/surgecontrolgate/ticket/getSituation");
@@ -118,7 +118,7 @@ function notify(date, district, quota, quota_amount) {
     xmlHttp.open("POST", "https://api.emailjs.com/api/v1.0/email/send");
     xmlHttp.setRequestHeader("Content-Type", "application/json");
     xmlHttp.addEventListener("load", function () {
-        console.log(xmlHttp.status, xmlHttp.response);
+        console.log(new Date().toISOString(), xmlHttp.status, xmlHttp.response);
     }, false);
     xmlHttp.send(JSON.stringify(data));
 }
